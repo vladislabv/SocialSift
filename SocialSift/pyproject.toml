@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "src"
+version = "0.1.0"
+authors = [
+    {name = "Vladislav Stasenko", email = "stasenko.vladislav@fh-swf.de"},
+    {name = "Sinan <>", email = "test@fh-swf.de"},
+]
+description = "A project dedicated to analyzing public data from social media and providing basic analysis of niche bloggers' and companies' online presence."
+readme = "README.rst"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+]
+dependencies = [
+    "requests",
+    "sqlalchemy"
+]

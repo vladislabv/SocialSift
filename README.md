@@ -54,3 +54,10 @@ This repo serves for a team project using web-mining techniques. The project con
     - Data Structure (public data of post or page/user):
         - Page (followers, following, bio)
         - Post (publishing date, lifetime impressions & engagements (likes, shares), sometimes Meta Info like MessageText or comments/share texts) - Set time window to lookup lifetime values and get time bounded measurements
+        
+        
+        
+        
+ Expose (bis 12.06.)
+ 
+ 

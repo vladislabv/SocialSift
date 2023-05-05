@@ -60,4 +60,15 @@ This repo serves for a team project using web-mining techniques. The project con
         
  Expose (bis 12.06.)
  
+ Inhalt (1-2 Seiten):
+ 
+ 1. Projektname: SocialSift
+ 2. Projektziel
+ 3. Projektumfang (Eingrenzung/Scope)
+ 4. Genutzte Datenquellen
+ 5. Projektmeilensteine (Was müssen wir tun, um unser Projektziel zu erreichen)
+ 6. Nutzen und Mehrwert des Projektes
+ 
+ -> Vorgang und Darstellung des Projektes soll klar und deutlich sein.
+ 
  

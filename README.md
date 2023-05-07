@@ -1,7 +1,9 @@
 # SocialSift
 
 ==============================
+
 This repo serves for a team project using web-mining techniques. The project dedicated to analyzing public data from social media and providing basic analysis of niche bloggers' and companies' online presence.
+
 ------------
 
 # IDEAS
@@ -59,7 +61,9 @@ This repo serves for a team project using web-mining techniques. The project ded
         - Post (publishing date, lifetime impressions & engagements (likes, shares), sometimes Meta Info like MessageText or comments/share texts) - Set time window to lookup lifetime values and get time bounded measurements
         
 ==============================
+
 Project Organization
+
 ------------
 
     ├── LICENSE

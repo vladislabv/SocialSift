@@ -57,7 +57,7 @@ This repo serves for a team project using web-mining techniques. The project ded
     - Data Structure (public data of post or page/user):
         - Page (followers, following, bio)
         - Post (publishing date, lifetime impressions & engagements (likes, shares), sometimes Meta Info like MessageText or comments/share texts) - Set time window to lookup lifetime values and get time bounded measurements
-
+        
 ==============================
 Project Organization
 ------------
@@ -111,3 +111,17 @@ Project Organization
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+=======
+
+ Expose (bis 12.06.)
+ 
+ Inhalt (1-2 Seiten):
+ 
+ 1. Projektname: SocialSift
+ 2. Projektziel
+ 3. Projektumfang (Eingrenzung/Scope)
+ 4. Genutzte Datenquellen
+ 5. Projektmeilensteine (Was müssen wir tun, um unser Projektziel zu erreichen)
+ 6. Nutzen und Mehrwert des Projektes
+ 
+ -> Vorgang und Darstellung des Projektes soll klar und deutlich sein.

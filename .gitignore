@@ -67,6 +67,8 @@ instance/
 
 # Scrapy stuff:
 .scrapy
+.csv
+.xlsx
 
 # VScode stuff:
 .vscode/

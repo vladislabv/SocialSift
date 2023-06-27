@@ -1,14 +1,10 @@
 import scrapy
-import random
-from webScraper.items import Restaurant
+from webscraper.items import Restaurant
 
-BINDADDRESSES = ["8.8.8.8", "8.8.4.4"]
 CITIES = ["duisburg", "berlin", "dortmund"]
 
 class RestaurantsSpider(scrapy.Spider):
-    name = "metaRestaurants"
-    bindaddress = random.choice(BINDADDRESSES)
-    allowed_domains = ["restaurant.info"]
+    name = "restaurant"
     start_urls = [
         f"https://restaurant.info/essen-gehen/{city}"
         for city in CITIES

@@ -1,26 +1,22 @@
 import scrapy
 import random
-from webScraper.items import Restaurant
+import pandas as pd
+from webscraper.items import Restaurant
 
-BINDADDRESSES = ["8.8.8.8", "8.8.4.4"]
-CITIES = ["duisburg", "berlin", "dortmund"]
+INPUT_FILE = "data/data.csv"
 
-
-class RestaurantsSpider(scrapy.Spider):
-    name = "RestaurantsAllData"
-    bindaddress = random.choice(BINDADDRESSES)
-    allowed_domains = ["restaurant.info"]
-    start_urls = [
-        f"https://restaurant.info/essen-gehen/{city}"
-        for city in CITIES
-    ]
+class WebsitesCrawler(scrapy.Spider):
+    name = "website"
+    
+    def start_requests(self):
+        start_url = pd.read_csv("data/data.csv").website.dropna().sample(5).tolist()
 
     def parse(self, response):
         self.logger.info("A response from %s just arrived!", response.url)
-        links = response.css("a::attr(href)").getall()
+        restaurants_on_page = response.css("ul.jq-result-list > li.jq-result-list-item > div > a::attr(href)").getall()
 
-        for next_link in links:
-            yield scrapy.Request(next_link, callback=self.parse)
+        for item in restaurants_on_page:
+            yield scrapy.Request(item, callback=self.parse_item)
 
         # go to next page
         next_page = response.css("li.page-next a::attr(href)").extract_first()

@@ -72,6 +72,8 @@ instance/
 
 # VScode stuff:
 .vscode/
+*.csv
+*.xlsx
 
 # Sphinx documentation
 docs/_build/

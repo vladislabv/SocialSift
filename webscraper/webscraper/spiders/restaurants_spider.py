@@ -1,4 +1,5 @@
 import scrapy
+from geopy.geocoders import Nominatim
 from webscraper.items import Restaurant
 
 CITIES = ["duisburg", "berlin", "dortmund"]
@@ -25,10 +26,17 @@ class RestaurantsSpider(scrapy.Spider):
 
     def parse_item(self, response):
         self.logger.info("A response from %s just arrived!", response.url)
+
+        # get location from address
+        geolocator = Nominatim(user_agent='LocationFinder')
+        address = ", ".join(response.css("div#overviewContact > div span::text").getall())
+        location = geolocator.geocode(address)
+
         return Restaurant(
             name=response.url.split("/")[-1],
             about=response.css("div#description > blockquote::text").get(),
             phone=response.css("a.jq-phone-complete::attr(href)").get(),
             website=response.css("a.jq-link-to-website::attr(href)").get(),
-            contact=", ".join(response.css("div#overviewContact > div span::text").getall()),
+            contact=address,
+            coordinates=[location.latitude, location.longitude],
         )

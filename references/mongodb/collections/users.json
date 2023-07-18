@@ -1,0 +1,7 @@
+{
+   "capped": false,
+   "validator": "<document>",
+   "validationLevel": "strict",
+   "validationAction": "error",
+   "pipeline": "<pipeline>"
+}

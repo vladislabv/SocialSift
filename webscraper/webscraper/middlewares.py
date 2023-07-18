@@ -70,9 +70,8 @@ class WaybackMachineMiddleware:
             # provide the original request (i.e. from now) to the queue
             snapshot_requests.append(meta['original_request'])
             # schedule all of the snapshots
-            for snapshot_request in snapshot_requests[:1]:
+            for snapshot_request in snapshot_requests:
                 spider.crawler.engine.crawl(snapshot_request)
-                # self.crawler.engine.crawl()
 
             # abort this request
             raise UnhandledIgnoreRequest

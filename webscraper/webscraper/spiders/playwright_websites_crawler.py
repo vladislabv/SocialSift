@@ -2,8 +2,6 @@ import scrapy
 from scrapy_playwright.page import PageMethod
 from webscraper.items import Restaurant
 
-BINDADDRESSES = ["8.8.8.8", "8.8.4.4"]
-
 class ClickAndSavePdfSpider(scrapy.Spider):
     name = "pdf"
 

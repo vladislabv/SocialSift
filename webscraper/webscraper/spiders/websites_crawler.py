@@ -1,5 +1,4 @@
 import scrapy
-import random
 import pandas as pd
 from webscraper.items import Restaurant
 

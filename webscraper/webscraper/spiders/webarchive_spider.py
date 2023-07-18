@@ -10,7 +10,6 @@ import pandas as pd
 
 from webscraper.items import Website, FileLoader
 
-BINDADDRESSES = ["8.8.8.8", "8.8.4.4"]
 CITIES = ["duisburg", "berlin", "dortmund"]
 
 class WebarchiveSpider(scrapy.Spider):
@@ -39,7 +38,9 @@ class WebarchiveSpider(scrapy.Spider):
         }
     }
     
-    start_urls = ['http://www.mueller-menden.de'] #pd.read_csv("data/data.csv").website.dropna().sample(1).tolist()
+    # read urls from db, for developing use csv
+    # pd.read_csv("data/data.csv").website.dropna().sample(1).tolist()
+    start_urls = ['http://www.mueller-menden.de']
 
     domains = list({urlparse(url).netloc for url in start_urls})
 
@@ -60,8 +61,6 @@ class WebarchiveSpider(scrapy.Spider):
             wayback_url=response.meta.get("wayback_machine_url", response.url),
             url=response.url,
         )
-
-        
         
         next_pages = response.css("a::attr(href)").getall()
         next_pages = {x for x in next_pages if x and osp.splitext(x)[-1]}

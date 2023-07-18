@@ -20,19 +20,6 @@ from itemadapter import ItemAdapter
 
 from webscraper.items import FileLoader, Website
 
-# class DuplicatesPipeline:
-
-#     def __init__(self):
-#         self.names_seen = set()
-
-#     def process_item(self, item, spider):
-#         adapter = ItemAdapter(item)
-#         if adapter['name'] in self.names_seen:
-#             raise DropItem(f"Duplicate item found: {item!r}")
-#         else:
-#             self.names_seen.add(adapter['name'])
-#             return item
-
 class WebsiteSaveToMongoPipeline:
     collection_name = "websites_raw_data"
 
@@ -67,19 +54,6 @@ class WebsiteSaveToMongoPipeline:
             {"full_text": item["full_text"]},
             {"_id": 1}
         )
-
-# class MyImagesPipeline(ImagesPipeline):
-#     def get_media_requests(self, item, info):
-#         for image_url in item["image_urls"]:
-#             yield scrapy.Request(image_url)
-
-#     def item_completed(self, results, item, info):
-#         image_paths = [x["path"] for ok, x in results if ok]
-#         if not image_paths:
-#             raise DropItem("Item contains no images")
-#         adapter = ItemAdapter(item)
-#         adapter["image_paths"] = image_paths
-#         return item
 
 class WebFilesPipeline(FilesPipeline):
 

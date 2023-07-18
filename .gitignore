@@ -51,6 +51,15 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# npm node_modules
+node_modules/
+
+# sqlite3
+*.db
+
+# migrations
+migrations/
+
 # Translations
 *.mo
 *.pot

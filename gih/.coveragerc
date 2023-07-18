@@ -1,0 +1,6 @@
+[run]
+source = gih
+omit = 
+    tests/*
+    autoapp.py
+

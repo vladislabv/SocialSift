@@ -77,6 +77,7 @@ module.exports = {
           filename: '[name][ext]'
         }
       },
+      {test: /\.(json|geojson)$/, loader: 'json-loader'},
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader', options: { presets: ["@babel/preset-env"], cacheDirectory: true } },
     ],
   }

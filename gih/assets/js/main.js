@@ -15,6 +15,12 @@ require.context(
   /.*/, // RegExp
 );
 
+require.context(
+  '../geodata', // context folder
+  true, // include subdirectories
+  /.*/, // RegExp
+);
+
 // Your own code
 require('./plugins');
 require('./script');

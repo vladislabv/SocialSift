@@ -18,10 +18,11 @@ from scrapy.pipelines.files import FilesPipeline
 import pymongo
 from itemadapter import ItemAdapter
 
-from webscraper.items import FileLoader, Website
+from webscraper.items import WebFile, RestoHistory
+from webscraper.processors import ProcessMongoEntries
 
-class WebsiteSaveToMongoPipeline:
-    collection_name = "websites_raw_data"
+
+class MongoDBPipeline:
 
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
@@ -31,7 +32,7 @@ class WebsiteSaveToMongoPipeline:
     def from_crawler(cls, crawler):
         return cls(
             mongo_uri=crawler.settings.get("MONGO_URI"),
-            mongo_db=crawler.settings.get("MONGO_DATABASE", "items"),
+            mongo_db=crawler.settings.get("MONGO_DATABASE", "webscraper"),
         )
 
     def open_spider(self, spider):
@@ -42,53 +43,28 @@ class WebsiteSaveToMongoPipeline:
         self.client.close()
 
     def process_item(self, item, spider):
-        if isinstance(item, Website):
-            d = ItemAdapter(item).asdict()
-            # do not store duplicated text, instead refer to the first appearance
-            d["source_item"] = self.add_source_pointer(d) or None
-            self.db[self.collection_name].insert_one(d)
+        self.db[item.collection].insert_one(ItemAdapter(item).asdict())
         return item
-    
-    def add_source_pointer(self, item):
-        return self.db[self.collection_name].find_one(
-            {"full_text": item["full_text"]},
-            {"_id": 1}
-        )
+        # proccessor = getattr(ProcessMongoEntries, self.mongo_collection)
+        # if not proccessor:
+        #     return item
+        # return proccessor(item, spider, self.collection)
+
 
 class WebFilesPipeline(FilesPipeline):
 
-    RELEVANT_EXTENSIONS = [
-        '.pdf', 
-        '.doc', 
-        '.docx', 
-        '.xls', 
-        '.xlsx', 
-        '.ppt', 
-        '.pptx',
-        '.jpg',
-        '.jpeg',
-        '.png',
-        '.gif',
-        '.svg',
-        '.webp',
-    ]
-
     def process_item(self, item, spider):
-        if isinstance(item, FileLoader):
+        if isinstance(item, WebFile):
             super().process_item(item, spider)
         
         return item
 
     def file_path(self, request, response=None, info=None, *, item=None):
-        uri_parsed = urlparse(request.url)
-        file_name = osp.basename(uri_parsed.path)
-        file_ext = osp.splitext(file_name)[-1]
-        url_hash = hashlib.sha1(to_bytes(request.url)).hexdigest()
+        file_url_hash = hashlib.shake_256(request.url.encode()).hexdigest(5)
+        file_perspective = request.url.split("/")[-1]
+        filename = f"{file_url_hash}_{file_perspective}"
 
-        if file_ext in self.RELEVANT_EXTENSIONS:
-            return f"{uri_parsed.netloc}_{url_hash}.{file_ext}"
-        
-        raise DropItem('Not a valid file type in %s' % item)
+        return filename
     
     def get_media_requests(self, item, info):
         urls = item.get('file_urls', [])

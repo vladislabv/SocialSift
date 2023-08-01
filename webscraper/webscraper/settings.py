@@ -6,57 +6,50 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
+import dotenv
+
+# load environment variables
+project_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), os.pardir)
+dotenv_path = os.path.join(os.path.abspath(project_dir), '.env')
+dotenv.load_dotenv(dotenv_path)
+# ---------------------------------
 
 BOT_NAME = 'webscraper'
 
 SPIDER_MODULES = ['webscraper.spiders']
 NEWSPIDER_MODULE = 'webscraper.spiders'
 
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'restaurants (+http://www.yourdomain.com)'
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+# CONCURRENT_REQUESTS = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 3
-
+DOWNLOAD_TIMEOUT = 15
 # Middlewares
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
-    'rotating_proxies.middlewares.RotatingProxyMiddleware': 800,
-    'rotating_proxies.middlewares.BanDetectionMiddleware': 800,
+    #'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+    #'rotating_proxies.middlewares.RotatingProxyMiddleware': 300,
+    #'rotating_proxies.middlewares.BanDetectionMiddleware': 300,
 }
-
-## Playwright Settings
-DOWNLOAD_HANDLERS = {
-    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-}
-TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
-PLAYWRIGHT_BROWSER_TYPE = "firefox"
-PLAYWRIGHT_LAUNCH_OPTIONS = {
-    "headless": True,
-    "timeout": 30 * 1000,  # 30 seconds
-}
-# Maximum amount of allowed concurrent Playwright contexts
-PLAYWRIGHT_MAX_CONTEXTS = 32
-# Timeout to be used when requesting pages by Playwright, in milliseconds
-PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 10 * 1000  # 10 seconds
+CLOSESPIDER_PAGECOUNT = 500
+# TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
+#CONCURRENT_REQUESTS_PER_IP = 2
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+COOKIES_ENABLED = True
 
 # Proxy Settings
 ROTATING_PROXY_LIST = [
@@ -89,21 +82,30 @@ ROTATING_PROXY_LIST = [
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'restaurants.middlewares.RestaurantsDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+    #'scrapy_wayback_middleware.WaybackMiddleware': 543,
+    # 'webscraper.middlewares.WaybackMachineMiddleware': 543,
+    #"https": "scrapy.core.downloader.handlers.http2.H2DownloadHandler",
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
+MONGO_DATABASE = 'webscraper'
+MONGO_DB_USERNAME = os.getenv('MONGO_DB_USERNAME')
+MONGO_DB_PASSWORD = os.getenv('MONGO_DB_PASSWORD')
+MONGO_URI = f'mongodb+srv://{MONGO_DB_USERNAME}:{MONGO_DB_PASSWORD}@gastrohub.o9izr0g.mongodb.net'
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'webscraper.pipelines.WebsiteSaveToMongoPipeline': 100,
-    'webscraper.pipelines.WebFilesPipeline': 200,
+    # 'webscraper.pipelines.PlaceToMongoPipeline': 50,
+    'webscraper.pipelines.WebFilesPipeline': 1,
+    'webscraper.pipelines.MongoDBPipeline': 50,
 }
 
 # Pipeline settings
@@ -125,20 +127,20 @@ FILES_EXPIRES = 90
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_ENABLED = True
 # The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
+AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
+AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Enable showing throttling stats for every response received:
-#AUTOTHROTTLE_DEBUG = False
+AUTOTHROTTLE_DEBUG = False
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
+HTTPCACHE_ENABLED = False
 #HTTPCACHE_EXPIRATION_SECS = 0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
@@ -160,11 +162,12 @@ FEEDS = {
 LOG_ENABLE = True
 LOG_ENCODING = 'UTF-8'
 LOG_FILE = "logs/live.log"
-LOG_LEVEL = "INFO"
+LOG_LEVEL = "DEBUG"
 
 
-RETRY_ENABLED = False
-DOWNLOAD_TIMEOUT = 15
+RETRY_ENABLED = True
 AJAXCRAWL_ENABLED = True
-REACTOR_THREADPOOL_MAXSIZE = 20
+REACTOR_THREADPOOL_MAXSIZE = 1
 SCHEDULER_PRIORITY_QUEUE = "scrapy.pqueues.DownloaderAwarePriorityQueue"
+
+WAYBACK_MACHINE_TIME_RANGE = (20010101000000, 20210101000000)

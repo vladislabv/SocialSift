@@ -12,7 +12,8 @@ from webscraper.utils import (
     normalize_str,
     format_number,
     filter_empty,
-    to_datetime
+    to_datetime,
+    swap_coordinates,
 )
 
 
@@ -42,7 +43,7 @@ class RestoLoader(ItemLoader):
 
     phone_in = MapCompose(str.strip, format_number)
 
-    location_in = MapCompose(str.strip, float)
+    location_in = MapCompose(str.strip, float, swap_coordinates)
     location_out = Identity()
 
 

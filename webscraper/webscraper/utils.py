@@ -32,6 +32,11 @@ def to_datetime(x):
     except ValueError:
         return x
     
+def swap_coordinates(x):
+    if isinstance(x, list) and len(x) == 2:
+        return [x[1], x[0]]
+    
+    raise ValueError('Invalid coordinates format')
 # constants
 # common file extensions that are not followed if they occur in links
 DOWNLOAD_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'odt', 'ods', 'odg', 'odp']

@@ -6,7 +6,7 @@ from parsel import Selector
 
 from webscraper.items import Review
 from webscraper.itemsloaders import ReviewLoader
-
+from webscraper.utils import fetch_documents, get_mongo_connection
 
 class YelpReviewsSpider(scrapy.Spider):
     name = "yelp_reviews"
@@ -15,23 +15,23 @@ class YelpReviewsSpider(scrapy.Spider):
     place = "Meena Kumari"
     review_page_size = 10
 
-
     def start_requests(self):
         url = "https://www.yelp.de/search/snippet"
+        db = get_mongo_connection()
+        for doc in fetch_documents(db["new_restos"], query={}, projection={"_id": 1, "name": 1, "address.city": 1}):
+            payload = {
+                "find_desc": doc["name"],
+                "find_loc": doc["address"]["city"],
+                "request_origin": "user",
+            }
 
-        payload = {
-            "find_desc": self.place,
-            "find_loc": self.town,
-            "request_origin": "user",
-        }
-
-        q_string = urlencode(payload)
-        url += f"?{q_string}"
+            q_string = urlencode(payload)
+            url += f"?{q_string}"
   
-        yield scrapy.Request(url, self.parse)
+            yield scrapy.Request(url, self.parse, cb_kwargs=dict(resto_id=doc["_id"]))
 
 
-    def parse(self, response):
+    def parse(self, response, resto_id):
         self.logger.info("A response from %s just arrived!", response.url)
         biz = self.parse_api_response(response)
 
@@ -51,7 +51,7 @@ class YelpReviewsSpider(scrapy.Spider):
             q_string = urlencode(payload)
             url = f"https://www.yelp.de/biz/{biz['bizId']}/review_feed?{q_string}"
 
-            yield scrapy.Request(url, callback=self.parse_reviews)
+            yield scrapy.Request(url, callback=self.parse_reviews, cb_kwargs=dict(resto_id=resto_id))
 
 
     def parse_api_response(self, response):
@@ -63,7 +63,7 @@ class YelpReviewsSpider(scrapy.Spider):
         return result
     
             
-    def parse_reviews(self, response):
+    def parse_reviews(self, response, resto_id):
         self.logger.info("A response from %s just arrived!", response.url)
 
         for selector in Selector(response.text).jmespath('reviews'):
@@ -76,6 +76,7 @@ class YelpReviewsSpider(scrapy.Spider):
             l.add_jmes('votes', 'comment.feedback')
             l.add_jmes('author_name', 'user.markupDisplayName')
             l.add_value('platform', self.name)
+            l.add_value('resto_id', resto_id)
 
             yield l.load_item()
 

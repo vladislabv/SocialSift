@@ -32,7 +32,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 0.25
 DOWNLOAD_TIMEOUT = 15
 # Middlewares
 DOWNLOADER_MIDDLEWARES = {
@@ -41,7 +41,7 @@ DOWNLOADER_MIDDLEWARES = {
     #'rotating_proxies.middlewares.RotatingProxyMiddleware': 300,
     #'rotating_proxies.middlewares.BanDetectionMiddleware': 300,
 }
-CLOSESPIDER_PAGECOUNT = 500
+# CLOSESPIDER_PAGECOUNT = 500
 # TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 
 # The download delay setting will honor only one of:
@@ -95,7 +95,7 @@ DOWNLOADER_MIDDLEWARES = {
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
-MONGO_DATABASE = 'webscraper'
+MONGO_DATABASE = 'web_scraper'
 MONGO_DB_USERNAME = os.getenv('MONGO_DB_USERNAME')
 MONGO_DB_PASSWORD = os.getenv('MONGO_DB_PASSWORD')
 MONGO_URI = f'mongodb+srv://{MONGO_DB_USERNAME}:{MONGO_DB_PASSWORD}@gastrohub.o9izr0g.mongodb.net'

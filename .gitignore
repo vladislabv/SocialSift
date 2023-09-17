@@ -81,8 +81,14 @@ instance/
 
 # VScode stuff:
 .vscode/
+
+# data extensions
 *.csv
 *.xlsx
+*.doc
+*.docx
+*.pdf
+/data
 
 # Sphinx documentation
 docs/_build/

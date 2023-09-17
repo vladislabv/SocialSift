@@ -25,41 +25,58 @@ class RestoLoader(ItemLoader):
     about_in = MapCompose(w3h.remove_tags, str.strip, fix_whitespaces, normalize_str)
     about_out = Join()
 
-    kitchen_type_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
-    kitchen_type_out = Join(', ')
-
-    opening_hours_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
-    opening_hours_out = Identity()
+    kitchen_types_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
+    kitchen_types_out = Join(', ')
 
     social_media_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
     social_media_out = Identity()
 
-    address_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
-
-    zip_in = MapCompose(str.strip, fix_whitespaces)
-
-    city_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
-
     phone_in = MapCompose(str.strip, format_number)
 
-    location_in = MapCompose(str.strip, float)
-    location_out = Identity()
+    working_hours_out = Identity()
+    
+    reviews_out = Identity()
+
+    menu_positions_out = Identity()
+
+
+class LocationLoader(ItemLoader):
+    default_output_processor = TakeFirst()
+
+    coordinates_in = MapCompose(str.strip, float)
+    coordinates_out = Identity()
+
+
+class AddressLoader(ItemLoader):
+    default_output_processor = TakeFirst()
+
+    street_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
+    zip_in = MapCompose(str.strip, fix_whitespaces)
+    city_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
+
+
+class WorkingHoursLoader(ItemLoader):
+    default_output_processor = TakeFirst()
+
+    open_time_in = MapCompose(str.strip)
+
+    close_time_in = MapCompose(str.strip)
 
 
 class MenuLoader(ItemLoader):
     default_output_processor = TakeFirst()
 
-    name_in = MapCompose(str.strip, fix_whitespaces, normalize_str, filter_empty)
+    name_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
     name_out = Join()
 
     price_in = MapCompose(str.strip, float)
 
     currency_in = MapCompose(str.strip, str.upper)
 
-    description_in = MapCompose(str.strip, fix_whitespaces, normalize_str, filter_empty)
+    description_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
     description_out = Join()
 
-    category_in = MapCompose(w3h.remove_tags, str.strip, fix_whitespaces, filter_empty)
+    category_in = MapCompose(w3h.remove_tags, str.strip, fix_whitespaces)
     category_out = Join(', ')
 
 

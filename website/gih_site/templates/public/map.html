@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block css %}
+<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/leaflet.css') }}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="mt-5">Please set a range on the map of Germany</h2>
+    <!-- Container for the Leaflet map -->
+    <div id="map" style="height: 400px;"></div>
+    <div class="map-tools">
+        <div class="slidecontainer" id="left-side">
+            <input type="range" min="1" max="15" value="5" class="slider" id="DistanceRange">
+            <p>Radius: <span id="DistanceValue"></span></p>
+        </div>
+        <form action="" method="post">
+            <button name="foo" value="proceed" class="custom-button" id="right-side">Proceed</button>
+        </form>
+    </div>
+   
+</div>
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

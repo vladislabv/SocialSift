@@ -43,12 +43,11 @@ class MongoDBPipeline:
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[item.collection].insert_one(ItemAdapter(item).asdict())
-        return item
-        # proccessor = getattr(ProcessMongoEntries, self.mongo_collection)
-        # if not proccessor:
-        #     return item
-        # return proccessor(item, spider, self.collection)
+        # self.db[item.collection].insert_one(ItemAdapter(item).asdict())
+        proccessor = getattr(ProcessMongoEntries, item.collection)
+        if not proccessor:
+            return item
+        return proccessor(item, spider, self.db, item.collection)
 
 
 class WebFilesPipeline(FilesPipeline):

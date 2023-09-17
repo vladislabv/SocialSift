@@ -10,41 +10,49 @@ class Resto(scrapy.Item):
     # meta field
     collection = 'restos'
     # define the fields for your item here like:
-    id = scrapy.Field()
     name = scrapy.Field()
     about = scrapy.Field()
     website = scrapy.Field()
-    kitchen_type = scrapy.Field()  # list of strings
-    opening_hours = scrapy.Field()  # list of strings
+    kitchen_types = scrapy.Field()  # list of strings
+    
     social_media = scrapy.Field()  # list of strings
     # location data fields
-    address = scrapy.Field()
-    zip = scrapy.Field()
-    city = scrapy.Field()
-    country = scrapy.Field()
     phone = scrapy.Field()
     location = scrapy.Field()
+    # embedded documents
+    address = scrapy.Field()
+    # list of Menu items
+    menu_positions = scrapy.Field()
+    # list of RestoHours items
+    working_hours = scrapy.Field()
+    # referenced documents
+    # list of Review items
+    reviews = scrapy.Field()
+
+
+class RestoAddress(scrapy.Item):
+    street = scrapy.Field()
+    zip = scrapy.Field()
+    city = scrapy.Field()
+
+class RestoLocation(scrapy.Item):
+    type = scrapy.Field()
+    coordinates = scrapy.Field()
 
 class RestoHours(scrapy.Item):
-    # meta field
-    collection = 'resto_hours'
     # define the fields for your item here like:
     day = scrapy.Field()
     open_time = scrapy.Field()
     close_time = scrapy.Field()
-    resto_id = scrapy.Field()
 
 
 class Menu(scrapy.Item):
-    # meta field
-    collection = 'menus'
     # define the fields for your item here like:
     name = scrapy.Field()
     price = scrapy.Field()
     currency = scrapy.Field()
     description = scrapy.Field()
     category = scrapy.Field()
-    resto_id = scrapy.Field()
 
 
 class Review(scrapy.Item):
@@ -59,7 +67,6 @@ class Review(scrapy.Item):
     language = scrapy.Field()
     platform = scrapy.Field()
     author_name = scrapy.Field()
-    resto_id = scrapy.Field()
 
 
 class RestoHistory(scrapy.Item):

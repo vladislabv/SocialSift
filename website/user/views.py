@@ -7,7 +7,7 @@ blueprint = Blueprint("user", __name__, url_prefix="/users", static_folder="../s
 
 
 @blueprint.route("/")
-# @login_required
+@login_required
 def members():
     """List members."""
     return render_template("users/members.html")

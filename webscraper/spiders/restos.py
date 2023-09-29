@@ -1,7 +1,10 @@
-"""
-This module contains a Scrapy Spider for extracting restaurant data from speisekarte.de.
-"""
+import math
+from urllib.parse import urlparse
+
 import scrapy
+from scrapy.spiders import SitemapSpider
+
+import parsel
 
 from webscraper.items import (
     Resto,
@@ -24,23 +27,25 @@ from webscraper.utils import gen_weekdays_in_between
 
 
 
-class RestosSpider(scrapy.spiders.SitemapSpider):
+class RestosSpider(SitemapSpider):
     name = "restos"
-    allowed_domains = ["images.speisekarte.de", "speisekarte.de"]
+    allowed_domains = ["images.speisekarte.de", "speisekarte.de", "yelp.de", "golocal.de"]
     sitemap_urls  = ["https://images.speisekarte.de/media/docs/sitemaps/staedte1.xml"]
     sitemap_rules = [('https://www.speisekarte.de', 'parse_page')]
+
+    review_page_size = 10
 
     def parse_page(self, response):
         self.logger.info('Hi, this is a resto page! %s', response.url)
         
         resto_urls = response.css("h2 a[href*='/restaurant/']::attr(href)").getall()
-        for url in resto_urls:
+        for url in resto_urls[:5]:
             yield scrapy.Request(url, callback=self.parse_item)
 
         # go to next page (pagination)
-        next_page = response.css("nav[aria-label='Seitennummerierung'] .page-item:not(.disabled) a[href*='page=']::attr(href)").get()
-        if next_page:
-            yield response.follow(next_page, callback=self.parse_page)
+        # next_page = response.css("nav[aria-label='Seitennummerierung'] .page-item:not(.disabled) a[href*='page=']::attr(href)").get()
+        # if next_page:
+        #     yield response.follow(next_page, callback=self.parse_page)
 
     def parse_item(self, response):
         self.logger.info('Hi, this is a resto item page! %s', response.url)
@@ -124,6 +129,7 @@ class RestosSpider(scrapy.spiders.SitemapSpider):
         self.logger.info('Hi, this is a reviews page! %s', response.url)
         items = []
         
+        # parse main site
         for selector in response.css("li.user-comment"):
             l = ReviewLoader(item=Review(), selector=selector)
             
@@ -136,9 +142,116 @@ class RestosSpider(scrapy.spiders.SitemapSpider):
             l.add_value('rating', len(rating_stars))
             
             items.append(l.load_item())
-        
+
         # separate reviews from restaurants later
         loader.add_value('reviews', items)
 
         yield loader.load_item()
+
+        rest = loader.load_item()
+        rest_name = rest['name'].strip()
+        rest_city = rest['address'].get('city', '').strip()
+
+        # yelp.de
+        yield scrapy.FormRequest(
+            url="https://www.yelp.de/search/snippet", 
+            method='GET', 
+            callback=self.parse_yelp_response,
+            cb_kwargs={'name': rest_name, 'city': rest_city},
+            formdata={
+                "find_desc": rest_name,
+                "find_loc": rest_city,
+                "request_origin": "user",
+            }
+        )
+
+        # golocal.de
+        yield scrapy.FormRequest(
+            url="https://www.golocal.de/suchen/", 
+            method='GET', 
+            callback=self.parse_golocal_response, 
+            cb_kwargs={'name': rest_name, 'city': rest_city},
+            formdata={
+                "q": "location",
+                "what": rest_name,
+                "address": "",
+            }
+        )
+
+
+    def parse_yelp_response(self, response, name, city):
+        self.logger.info("A response from %s just arrived!", response.url)
+        selector = parsel.Selector(response.text)
+        biz = selector.jmespath('searchPageProps.mainContentComponentsListProps[?ranking==1]')
+
+        if not biz:
+            self.logger.error(f"Could not find location data for query: {response.url}")
+            return
         
+        biz_info = biz.get('searchResultBusiness', {})
+        no_of_reviews = biz_info.get('reviewCount', 0)
+        total_review_pages = int(math.ceil(no_of_reviews / self.review_page_size))
+
+        for i in range(0, total_review_pages + 1):
+            yield scrapy.FormRequest(
+                url=f"https://www.yelp.de/biz/{biz['bizId']}/review_feed", 
+                method='GET', 
+                callback=self.parse_yelp_reviews,
+                cb_kwargs={'name': name, 'city': city},
+                formdata={
+                    "q": "",
+                    "sort_by": "relevance_desc",
+                    "start": i,
+                }
+        )
+
+            
+    def parse_yelp_reviews(self, response, name, city):
+        self.logger.info("A response from %s just arrived!", response.url)
+
+        for selector in parsel.Selector(response.text).jmespath('reviews'):
+            l = ReviewLoader(item=Review(), selector=selector)
+
+            l.add_jmes('date', 'localizedDate')
+            l.add_jmes('rating', 'rating')
+            l.add_jmes('text', 'comment.text')
+            l.add_jmes('language', 'comment.language')
+            l.add_jmes('votes', 'comment.feedback')
+            l.add_jmes('author_name', 'user.markupDisplayName')
+            l.add_value('platform', self.name)
+            l.add_value('resto_name', name)
+            l.add_value('resto_city', city)
+
+            yield l.load_item()
+    
+
+    def parse_golocal_response(self, response, name, city):
+        self.logger.info("A response from %s just arrived!", response.url)
+        
+        new_url = response.headers.get("Location", b"").decode()
+
+        if new_url:
+            parsed_url = urlparse(new_url)
+
+            yield scrapy.Request(
+                url=parsed_url.path+"bewertungen/",
+                callback=self.parse_golocal_reviews,
+                cb_kwargs={'name': name, 'city': city}
+            )
+
+
+    def parse_golocal_reviews(self, response, name, city):
+        self.logger.info("A response from %s just arrived!", response.url)
+
+        for selector in response.css("section[id=reviewList] > article"):
+            l = ReviewLoader(item=Review(), selector=selector)
+
+            l.add_css("date", ".reviewitem__ratinginfo .reviewitem__datewrap meta::attr(content)")
+            l.add_css("rating", ".reviewitem__ratinginfo .reviewitem__rating > div[itemprop='ratingValue']::text")
+            l.add_css("text", ".reviewitem__reviewbody > p[itemprop='reviewBody']::text")
+            l.add_css("platform", ".reviewitem__ratinginfo .reviewitem__datewrap a:not(.reviewitem__date)::text,span:not(span[itemprop='author'])::text")
+            l.add_css("author_name", ".reviewitem__usertitle meta::attr(content)")
+            l.add_value('resto_name', name)
+            l.add_value('resto_city', city)
+
+            yield l.load_item()

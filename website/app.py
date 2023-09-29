@@ -6,14 +6,14 @@ import sys
 from flask import Flask, render_template
 
 from website import public, user
+from website.settings import LOG_PATH
 from website.extensions import (
     #bcrypt,
-    #cache,
-    #csrf_protect,
-    db,
+    cache,
+    csrf_protect,
     #debug_toolbar,
     #flask_static_digest,
-    #login_manager,
+    login_manager,
 )
 
 
@@ -27,7 +27,7 @@ def create_app(config_object="website.settings"):
     register_extensions(app)
     register_blueprints(app)
     register_errorhandlers(app)
-    register_shellcontext(app)
+    #register_shellcontext(app)
     configure_logger(app)
     return app
 
@@ -35,10 +35,9 @@ def create_app(config_object="website.settings"):
 def register_extensions(app):
     """Register Flask extensions."""
     #bcrypt.init_app(app)
-    #cache.init_app(app)
-    #db.init_app(app)
-    #csrf_protect.init_app(app)
-    #login_manager.init_app(app)
+    cache.init_app(app)
+    csrf_protect.init_app(app)
+    login_manager.init_app(app)
     #debug_toolbar.init_app(app)
     #flask_static_digest.init_app(app)
     return None
@@ -47,7 +46,7 @@ def register_extensions(app):
 def register_blueprints(app):
     """Register Flask blueprints."""
     app.register_blueprint(public.views.blueprint)
-    # app.register_blueprint(user.views.blueprint)
+    app.register_blueprint(user.views.blueprint)
     return None
 
 
@@ -65,18 +64,25 @@ def register_errorhandlers(app):
     return None
 
 
-def register_shellcontext(app):
-    """Register shell context objects."""
+# def register_shellcontext(app):
+#     """Register shell context objects."""
 
-    def shell_context():
-        """Shell context objects."""
-        return {"db": db, "User": user.models.User}
+#     def shell_context():
+#         """Shell context objects."""
+#         return {"db": db, "User": user.models.User}
 
-    app.shell_context_processor(shell_context)
+#     app.shell_context_processor(shell_context)
 
 
 def configure_logger(app):
     """Configure loggers."""
-    handler = logging.StreamHandler(sys.stdout)
+    # handler = logging.StreamHandler(sys.stdout)
+    # if not app.logger.handlers:
+    #     app.logger.addHandler(handler)
+    # Use FileHandler to stream log messages to a file
+    handler = logging.FileHandler(LOG_PATH)
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")  
+    handler.setFormatter(formatter)  # Apply a formatter to the handler
+
     if not app.logger.handlers:
         app.logger.addHandler(handler)

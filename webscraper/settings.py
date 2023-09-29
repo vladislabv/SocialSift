@@ -94,7 +94,7 @@ DOWNLOADER_MIDDLEWARES = {
 #EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
-MONGO_DATABASE = 'web_scraper'
+MONGO_DATABASE = 'test_web_scraper'
 MONGO_DB_USERNAME = os.getenv('MONGO_DB_USERNAME')
 MONGO_DB_PASSWORD = os.getenv('MONGO_DB_PASSWORD')
 MONGO_URI = f'mongodb+srv://{MONGO_DB_USERNAME}:{MONGO_DB_PASSWORD}@gastrohub.o9izr0g.mongodb.net'

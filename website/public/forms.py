@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField
 from wtforms.validators import DataRequired
 
-from gih_site.user.models import User
+from website.user.models import User
 
 
 class LoginForm(FlaskForm):
@@ -24,7 +24,7 @@ class LoginForm(FlaskForm):
         if not initial_validation:
             return False
 
-        self.user = None # User.query.filter_by(username=self.username.data).first()
+        self.user = User.objects(username=self.username.data).first()
         if not self.user:
             self.username.errors.append("Unknown username")
             return False

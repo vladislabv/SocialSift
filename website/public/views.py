@@ -12,12 +12,12 @@ from flask import (
 )
 from flask_login import login_required, login_user, logout_user
 
-from gih_site.extensions import login_manager
-from gih_site.database import db
-from gih_site.public.forms import LoginForm
-from gih_site.user.forms import RegisterForm
-from gih_site.user.models import User
-from gih_site.utils import flash_errors
+from website.extensions import login_manager
+from website.database import db, db_scraper
+from website.public.forms import LoginForm
+from website.user.forms import RegisterForm
+from website.user.models import User
+from website.utils import flash_errors
 
 blueprint = Blueprint("public", __name__, static_folder="../static")
 
@@ -25,14 +25,10 @@ blueprint = Blueprint("public", __name__, static_folder="../static")
 @login_manager.user_loader
 def load_user(user_id):
     """Load user by ID."""
-    return User.get_by_id(int(user_id))
+    return User.get_by_id(user_id)
 
 
 @blueprint.route("/", methods=["GET", "POST"])
-def test():
-    return render_template('public/test.html')
-
-
 @blueprint.route("/home/", methods=["GET", "POST"])
 def home():
     """Home page."""
@@ -93,10 +89,9 @@ def get_restaurants():
     min_longitude = request.args.get('min_longitude', type=float)
     max_latitude = request.args.get('max_latitude', type=float)
     max_longitude = request.args.get('max_longitude', type=float)
-    # Make sure the 'location' field is properly formatted as GeoJSON Point
 
-    # Example code:
-    restaurants = db['test_collection'].find({
+    # Make sure the 'location' field is properly formatted as GeoJSON Point
+    restaurants = db_scraper["view_restos"].find({
         'location': {
             '$geoWithin': {
                 '$box': [
@@ -105,7 +100,7 @@ def get_restaurants():
                 ]
             }
         }
-    }, {'_id': 0})
+    })
     
     geojson_restaurants = {
         "type": "FeatureCollection",
@@ -113,16 +108,117 @@ def get_restaurants():
     }
 
     for restaurant in restaurants:
+        if not restaurant.get('location'):
+            continue
+
+        if not restaurant.get('name'):
+            continue
+
+        if not restaurant.get('address'):
+            restaurant["address"] = {}
+
+        avg_price = restaurant.get("average_price")
+        if not isinstance(avg_price, str):
+            avg_price = str(round(avg_price, 2)) + " €"
+
+        avg_rating = restaurant.get("average_rating")
+        if not isinstance(avg_rating, str):
+            avg_rating = str(round(avg_rating, 2)) + " ⭐"
+
         geojson_restaurants["features"].append({
             "type": "Feature",
             "geometry": restaurant['location'],
             "properties": {
-                "name": restaurant['name'],
-                "address": restaurant['address']
+                "name": restaurant["name"],
+                "street": restaurant["address"].get("street", ""),
+                "zip": restaurant["address"].get("zip", ""),
+                "city": restaurant["address"].get("city", ""),
+                "phone": restaurant.get("phone", ""),
+                "website": restaurant.get("website", ""),
+                "kitchen_types": restaurant.get("kitchen_types", "").lower(),
+                "average_price": avg_price,
+                "average_rating": avg_rating
             }
         })
 
     return jsonify(geojson_restaurants)
+
+
+@blueprint.route('/get_neighbourhoods', methods=['GET'])
+def get_neighbourhoods():
+    min_latitude = request.args.get('min_latitude', type=float)
+    min_longitude = request.args.get('min_longitude', type=float)
+    max_latitude = request.args.get('max_latitude', type=float)
+    max_longitude = request.args.get('max_longitude', type=float)
+
+    # Define the bounding box as a Polygon
+    bounding_box = {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [min_longitude, min_latitude],
+                [max_longitude, min_latitude],
+                [max_longitude, max_latitude],
+                [min_longitude, max_latitude],
+                [min_longitude, min_latitude]
+            ]
+        ]
+    }
+
+    # Use these values to query your MongoDB for neighborhoods within the bounds
+    MAX_TRIES = 3
+    for i in range(MAX_TRIES):
+        # Find neighborhoods that intersect with the bounding box
+        neighbourhoods = db_scraper["view_neighbourhoods"].find({
+            'neighbourhood.geometry': {
+                '$geoIntersects': {
+                    '$geometry': bounding_box
+                }
+            }
+        })
+        neighbourhoods = list(neighbourhoods)
+        if len(neighbourhoods) > 0:
+            break
+
+        import time
+        time.sleep(1)
+
+    geojson_neighbourhoods = {
+        "type": "FeatureCollection",
+        "features": []
+    }
+
+    for neighbourhood in neighbourhoods:
+
+        if not neighbourhood.get('neighbourhood'):
+            continue
+
+        avg_price = neighbourhood.get("average_price_glob")
+        if not isinstance(avg_price, str):
+            avg_price = str(round(avg_price, 2)) + " €"
+
+        avg_rating = neighbourhood.get("average_rating_glob")
+        if not isinstance(avg_rating, str):
+            avg_rating = str(round(avg_rating, 2)) + " ⭐"
+
+        upscale_ratio = neighbourhood.get("upscale_ratio")
+        if not isinstance(upscale_ratio, str):
+            upscale_ratio = str(round(upscale_ratio, 2) * 100) + " %"
+
+        geojson_neighbourhoods["features"].append({
+            "type": "Feature",
+            "geometry": neighbourhood['neighbourhood']['geometry'],
+            "properties": {
+                "name": neighbourhood['neighbourhood'].get("properties", {}).get("name", "Unknown"),
+                "boundary": neighbourhood['neighbourhood'].get("properties", {}).get("boundary", "Unknown"),
+                "kitchen_types": neighbourhood.get("top_kitchen_types", "Unspecified"),
+                "average_price": avg_price,
+                "average_rating": avg_rating,
+                "upscale_ratio": upscale_ratio
+            }
+        })
+
+    return jsonify(geojson_neighbourhoods)
 
 
 @blueprint.route('/map/', methods=['GET', 'POST'])

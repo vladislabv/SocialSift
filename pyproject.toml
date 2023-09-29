@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "src"
+name = "gih"
 version = "0.1.0"
 authors = [
     {name = "Vladislav Stasenko", email = "stasenko.vladislav@fh-swf.de"},
@@ -21,6 +21,11 @@ dependencies = [
     "scrapy",
     "pymongo",
     "python-dotenv",
-    "python-dateutil,
-    "phonenumbers"
+    "python-dateutil",
+    "phonenumbers",
+    "scrapy-user-agents",
+    "flask-login",
+    "flask-wtf",
+    "flask-caching",
+    "email-validator"
 ]

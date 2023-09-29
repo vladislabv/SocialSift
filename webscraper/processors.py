@@ -8,8 +8,6 @@ class ProcessMongoEntries:
     @classmethod
     def websites(cls, item, spider, collection):
         d = ItemAdapter(item).asdict()
-        # do not store duplicated text, instead refer to the first appearance
-        d["source_item"] = collection.find_one({"full_text": item["full_text"]}, {"_id": 1}) or None
         collection.insert_one(d)
         return
     
@@ -57,13 +55,22 @@ class ProcessMongoEntries:
     
     def reviews(cls, item, spider, db, collection):
         d = ItemAdapter(item).asdict()
-        resto_id = d.pop("resto_id", "")
-        if resto_id:
+        name = d.pop("resto_name", "")
+        city = d.pop("resto_city", "")
+        if name and city:
             r = db[collection].insert_one(d)
-            # append review to the restaurant
-            db["restos"].update_one(
-                {"_id": resto_id},
-                {"$push": {"review_ids": r.inserted_id}}
-            )
+            try:
+                # append review to the restaurant
+                db["restos"].update_one(
+                    {
+                        "$and": [
+                            {"name": name},
+                            {"adress.city": city}
+                        ]
+                    },
+                    {"$push": {"review_ids": r.inserted_id}}
+                )
+            except Exception as e:
+                print(e)
         return
 

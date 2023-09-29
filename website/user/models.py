@@ -1,64 +1,74 @@
 # -*- coding: utf-8 -*-
 """User models."""
 import datetime as dt
+from flask_login import UserMixin
+# import types
+from mongoengine import StringField, DateTimeField, BooleanField, ReferenceField
+from mongoengine.queryset import CASCADE
 
-# from flask_login import UserMixin
-# #from sqlalchemy.ext.hybrid import hybrid_property
+from website.database import PkDocument
 
-# #from gih.database import Column, PkModel, db, reference_col, relationship
-# from gih_site.extensions import bcrypt
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
-# class Role(PkModel):
-#     """A role for a user."""
+class MongoUserMixin(UserMixin):
+    """Custom user mixin for mongoengine models."""
+    
+    @property
+    def password(self):
+        """Hashed password."""
+        return self._password
 
-#     __tablename__ = "roles"
-#     name = Column(db.String(80), unique=True, nullable=False)
-#     user_id = reference_col("users", nullable=True)
-#     user = relationship("User", backref="roles")
+    @password.setter
+    def password(self, value):
+        """Set password."""
+        self._password = generate_password_hash(value)
+        
+    def check_password(self, value):
+        """Check password."""
+        return check_password_hash(self._password, value)
 
-#     def __init__(self, name, **kwargs):
-#         """Create instance."""
-#         super().__init__(name=name, **kwargs)
 
-#     def __repr__(self):
-#         """Represent instance as a unique string."""
-#         return f"<Role({self.name})>"
+class User(MongoUserMixin, PkDocument):
+    """A user of the app."""
+    username = StringField(max_length=80, unique=True, required=True)
+    email = StringField(max_length=80, unique=True, required=True)
+    password = StringField(required=True)
+    created_at = DateTimeField(required=True, default=dt.datetime.utcnow)
+    first_name = StringField(max_length=30)
+    last_name = StringField(max_length=30)
+    active = BooleanField(default=False)
+    is_admin = BooleanField(default=False)
 
-class User:
-    pass
-# class User(UserMixin, PkModel):
-#     """A user of the app."""
+    @property
+    def full_name(self):
+        """Full user name."""
+        return f"{self.first_name} {self.last_name}"
 
-#     __tablename__ = "users"
-#     username = Column(db.String(80), unique=True, nullable=False)
-#     email = Column(db.String(80), unique=True, nullable=False)
-#     _password = Column("password", db.LargeBinary(128), nullable=True)
-#     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
-#     first_name = Column(db.String(30), nullable=True)
-#     last_name = Column(db.String(30), nullable=True)
-#     active = Column(db.Boolean(), default=False)
-#     is_admin = Column(db.Boolean(), default=False)
+    def __repr__(self):
+        """Represent instance as a unique string."""
+        return f"<User({self.username})>"
+    
+    def save(self, *args, **kwargs):
+        """Override save method to hash the password before saving."""
+        if 'password' in self._data:  # Check if the password was provided
+            self._data['password'] = generate_password_hash(self._data['password'])  # Hash the password
+        super(User, self).save(*args, **kwargs)  # Save the document
 
-#     @hybrid_property
-#     def password(self):
-#         """Hashed password."""
-#         return self._password
+    def set_password(self, password):
+        """Set the password by hashing it."""
+        self.password = generate_password_hash(password)
 
-#     @password.setter
-#     def password(self, value):
-#         """Set password."""
-#         self._password = bcrypt.generate_password_hash(value)
+    def check_password(self, password):
+        """Check if the given password matches the hashed password."""
+        return check_password_hash(self.password, password)
 
-#     def check_password(self, value):
-#         """Check password."""
-#         return bcrypt.check_password_hash(self._password, value)
 
-#     @property
-#     def full_name(self):
-#         """Full user name."""
-#         return f"{self.first_name} {self.last_name}"
+class Role(PkDocument):
+    """A role for a user."""
+    name = StringField(max_length=80, unique=True, required=True)
+    user = ReferenceField(User, reverse_delete_rule=CASCADE)
 
-#     def __repr__(self):
-#         """Represent instance as a unique string."""
-#         return f"<User({self.username!r})>"
+    def __repr__(self):
+        """Represent instance as a unique string."""
+        return f"<Role({self.name})>"

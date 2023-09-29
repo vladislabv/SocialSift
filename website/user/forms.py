@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
-from gih_site.user.models import User
+from website.user.models import User
 
 
 class RegisterForm(FlaskForm):
@@ -34,11 +34,11 @@ class RegisterForm(FlaskForm):
         initial_validation = super(RegisterForm, self).validate()
         if not initial_validation:
             return False
-        user = User.query.filter_by(username=self.username.data).first()
+        user = User.objects(username=self.username.data).first()
         if user:
             self.username.errors.append("Username already registered")
             return False
-        user = User.query.filter_by(email=self.email.data).first()
+        user = User.objects(email=self.email.data).first()
         if user:
             self.email.errors.append("Email already registered")
             return False

@@ -72,6 +72,8 @@ class Review(scrapy.Item):
     language = scrapy.Field()
     platform = scrapy.Field()
     author_name = scrapy.Field()
+    resto_name = scrapy.Field()
+    resto_city = scrapy.Field()
 
 class RestoHistory(scrapy.Item):
     """

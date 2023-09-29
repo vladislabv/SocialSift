@@ -1,48 +1,48 @@
 # Gastronomic Intelligence Hub (GIH)
 
-// Short (general) description of the project
+This web mining project focuses on the analysis of public data of gastronomic companies within Germany.
 
-1. Einführung / Motivation
+With the increasing diversity in the gastronomic industry, it becomes even more important to make the start-up decision based on facts. Whether it is for analyzing the market, competition or location, this solution will assist those interested in founding a business with all of these aspects.
 
-Im vorliegenden Exposé werden wir Ihnen unser Projekt „Gastronomic Intelligence Hub“ (GIH) vorstellen. Das Web-Mining-Projekt konzentriert sich auf die Analyse öffentlicher Daten von gastronomischen Unternehmen innerhalb Deutschlands. Mit der steigenden Vielfalt in der Gastronomiebranche wird es umso wichtiger, die
-Gründungsentscheidung faktenbasiert zu treffen. Ob für die Analyse von Markt, Wettbewerb oder Standort wird unsere Lösung den Gründungsinteressierten zur Seite stehen.
+The goal of the project is to gain a holistic understanding of the gastronomy landscape in Germany. To achieve this, public data from various information sources will be collected and analyzed so that sound insights can be gained.
 
-// Body of the project
+For this purpose, web mining techniques are used to provide information about restaurants, cafés, bars and other gastronomic businesses. This includes information such as locations, opening hours, ratings, menus and the like.
 
-2. Vorgehensweise und Projektziel
+The platform not only enables detailed analysis of the data, but also provides tools that can be used to visualize and interpret it. In this way, prospective restaurant entrepreneurs, investors or market researchers can make qualified decisions.
 
-2.1 Data Collection
+# Code & Dependencies
+Before running code, be sure all dependencies are installed:
 
-Zu Beginn des Projektes werden die Metadaten über deutsche Restaurants (z.B. Website, Adresse und Name) gesammelt. Hierzu wird die Aggregator-Website „htps://www.speisekarte.de“ genutzt, auf der Unternehmen ihre Kontaktinformationen bereitstellen. Derzeit existiert eine Liste von mehr als 20 Tsd. Restaurants, die täglich auf den neusten Stand gebracht wird. Für das Ziehen von weiteren nützlichen Informationen, wie Öffnungszeiten oder Speisekarten, wird ein Website-Crawler gebaut, der die Webseiten der zuvor gesammelten Restaurants scannen wird. Dabei wird erwartet, dass mindestens 80 Prozent der Restaurants über eine eigene Webseite
-verfügt.
+-- scraper
+"scrapy"
+"scrapy-user-agents"
+"python-dateutil"
+"phonenumbers"
 
-Neben dem Crawling werden auch diverse Services mit Kundenbewertungen genutzt, deren Daten zur Ermittlung von bestgewerteten Gerichten und Durchschnittsbeträgen verwendet werden. Es wird davon ausgegangen, dass über 60 Prozent der Restaurants auf einer der größten Bewertungsplattformen (Yelp, Golocal) zu finden sind.
+-- flask UI
+"flask"
+"flask-login"
+"flask-wtf"
+"flask-caching"
+"email-validator"
 
+-- both
+"pymongo"
+"python-dotenv"
 
-2.2 Data preprocessing
+To run the scraper for inserting data into your (local) instance of MongoDB, you will need:
+`scrapy run spider restos.py`
 
-Die gesammelten Daten werden mit Hilfe von Python bereinigt. Python bietet eine Vielzahl von Bibliotheken, die das Text Mining bzw. Nature Language Processing (NLP) erleichtern. Im Preprocessing geht es vor allem darum, die Speisekarten oder andere Informationen aus unstrukturierten HTML- und JSON-Dokumenten in eine analysierbare und lesbare Form zu bringen.
+After some data collected, you will need to start the Flask via:
+`flask run run_flask.py --no-debugger --no-reload`
 
-Anschließend werden die bereinigten Daten in eine relationale PostgreSQL-Datenbank überführt. Um eine effiziente Datenverarbeitung zu ermöglichen, erfolgt die Normalisierung durch Views und diversen SQL-Abfragen. Diese Kombination ermöglicht eine schnelle Verarbeitung der Daten und trägt zu einer problemlosen Handhabung weiterer Änderungen bei.
+That is it, enjoy exploring the collected & aggregated data!
 
-
-2.3 Data Analysis (Projektziel)
-
-Die Daten sollen den Unternehmer dabei unterstützen, folgende Fragen zu beantworten:
-    - Wie verteilen sich die gegebenen Restaurants in einem bestimmten Bereich nach Preisniveau etc.?
-    - Welche Gerichte sind auf einem bestimmten Standort auf der Karte am beliebtesten?
-
-Um diese Fragestellungen anzugehen, wird ein Template erstellt, bei dem der dynamische Inhalt von dem ausgewählten Bereich auf der Deutschlandkarte abhängt. Für die ausstehenden Analysen werden verschiedene Python-Funktionen verwendet, um eine effiziente Datenverarbeitung zu ermöglichen. Um die Kommunikation mit den Benutzern zu vereinfachen, wird eine Webanwendung mit Flask entwickelt, die die Analysen mit einer benutzerfreundlichen Visualisierung darstellt.
-
-
-3. Fazit
-   
-Das GIH-Projekt hat das Potenzial, Entrepreneurs wertvolle Einblicke in die Gastronomiebranche bereitzustellen. Zum Beispiel kann das Tool dazu beitragen, die Verteilung von Restaurants in einem bestimmten Bereich besser zu verstehen oder die beliebtesten Gerichte in der Nähe eines bestimmten Punktes auf der Karte zu identifizieren. Außerdem können die Daten dabei unterstützen, eine Nische im Markt zu finden und eine fundierte Entscheidung über die Gründung eines neuen Unternehmens zu treffen.
+# Contribution & Maintaince
+Vladislav Stasenko & Sinan Eker, but further community is highly welcome!
 
 ------------
-// Some sort of general documentation
 Project Organization
-
 ------------
 
     ├── LICENSE
@@ -51,11 +51,11 @@ Project Organization
     │   ├── external       <- Data from third party sources.
     │   ├── interim        <- Intermediate data that has been transformed.
     │   ├── processed      <- The final, canonical data sets for modeling.
+    │   ├── webscraper     <- any txt/csv files coming from the Scrapy spiders
     │   └── raw            <- The original, immutable data dump.
     │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    ├── docs               <- Paper where the final project is fully described.
     │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
     │
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
     │                         the creator's initials, and a short `-` delimited description, e.g.
@@ -70,9 +70,7 @@ Project Organization
     │                         generated with `pip freeze > requirements.txt`
     │
     │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
-
+    └── logs               <- Logging information running separately from Spiders and Flask
+    ...
 
 --------
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

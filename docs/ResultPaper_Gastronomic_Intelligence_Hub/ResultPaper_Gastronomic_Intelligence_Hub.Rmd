@@ -71,7 +71,7 @@ Die Plattform ermöglicht nicht nur eine detaillierte Auswertung der Daten, sond
 
 Nachfolgend werden die verschiedenen Aspekte des Projekts, insbesondere die Datenquellen, Analysetechniken und geplanten Funktionalitäten näher erläutert.
 
-Das Projekt lässt sich lokal reproduzieren, den Code und Anweisungen für Setup sind auf [GitHub](https://github.com/vladislabv/gastronomic-intelligence-hub) zu finden.
+Das Projekt lässt sich lokal reproduzieren Der Quellcode und die Anweisungen für den Setup sind auf [GitHub](https://github.com/vladislabv/gastronomic-intelligence-hub) zu finden.
 
 # Datenerfassung
 
@@ -392,24 +392,24 @@ Das GIH-Projekt hat das Potenzial, Entrepreneurs wertvolle Einblicke in die Gast
 
 Bei der Bearbeitung des Projektes hat nicht alles funktioniert, was im Konzeptpapier dargestellt wurde:
 
-- [WebArchive](https://archive.org/web/) ist ein mächtiges Werkzeug, aber sehr schlecht zum Scraping. Es produziert eine Menge Daten, die nutzlos sind. Das Verfeinern ist sehr schwierig wegen der unterschiedlichen Webseiten-Strukturen;
-- Crawlen von Tausenden von verschiedenen Domains führt zu vielen Blocks, Proxies können natürlich helfen, sind aber kostenpflichtig.
-- Das Parsen und Extrahieren von Informationen aus PDFs oder Bildern erfordert ein vortrainiertes Modell, das nicht öffentlich verfügbar ist. Aufgrund der Datenmenge und der benötigten Rechenkapazität haben wir diese Idee nicht weiter verfolgt;
+- [WebArchive](https://archive.org/web/) ist ein mächtiges Werkzeug, aber nicht geeignet zum Scraping. Es produziert eine Menge Daten, die nutzlos sind. Das Verfeinern ist sehr schwierig, da die Webseiten-Strukturen unterschiede aufweisen.
+- Das Crawlen von mehreren tausend Domains führt zu vielen Blocks, Proxies können natürlich helfen, sind aber kostenpflichtig.
+- Das Parsen und Extrahieren von Informationen aus PDFs oder Bildern erfordert ein vortrainiertes Modell, das nicht öffentlich verfügbar ist. Aufgrund der Datenmenge und der benötigten Rechenkapazität haben wir diese Idee nicht weiter verfolgt.
 
 Außerdem haben wir während des Projekts folgendes gelernt:
 
-- MongoDB ist stark für genau definierte Anwendungsfälle und kann sehr gut für Scraping-Projekte eingesetzt werden;
-- Manchmal ist es wertvoll zu analysieren, ob eine Webseite im Hintergrund API Abfragen macht, um die Daten zu holen. Meistens ist es dann einfacher mit der API zu arbeiten als mit dynamischen Webseiten;
-- OpenStreetMap bietet viele Möglichkeiten, wenn man mit Geodaten arbeitet. Und es ist kostenlos;
-- GeoJSON ist ein Format, das von fast allen Tools unterstützt wird. So konnten wir Leaflet mit MongoDB verbinden, da beide GeoJSON unterstützen;
-- Wir haben uns dafür entschieden: Interagieren ist wertvoller als Zahlen lesen, deshalb haben wir Leaflet anstelle von PDF-Berichten implementiert.
+- MongoDB ist optimal für genau definierte Anwendungsfälle und kann sehr gut für Scraping-Projekte eingesetzt werden.
+- Manchmal ist es wertvoll zu analysieren, ob eine Webseite im Hintergrund API-Abfragen macht, um die Daten zu holen. Meistens ist es dann einfacher mit der API zu arbeiten als mit dynamischen Webseiten.
+- OpenStreetMap bietet viele Möglichkeiten, wenn man mit Geodaten arbeitet. Und es ist kostenlos.
+- GeoJSON ist ein Format, das von fast allen Tools unterstützt wird. So konnten wir Leaflet mit MongoDB verbinden, da beide GeoJSON unterstützen.
+- Wir haben uns für folgendes entschieden: Interagieren ist wertvoller als Zahlen lesen, weshalb wir Leaflet anstelle von PDF-Berichten implementiert haben.
 
 ## Mögliche (weitere) Entwicklung
 
 Nach Abgabe des Projektes möchten wir dennoch erwähnen, welche Features aus unserer Sicht noch sinnvoll sein könnten:
 
-- Schreiben eines Kreiszeigers für die Leaflet-Karte, wobei der Radius vom Benutzer frei gewählt werden kann. So kann der Benutzer einen Cross-City-Vergleich sehen;
-- Dem Benutzer die Möglichkeit geben, ausgewählte Restaurants oder Stadtteile als PDF herunterzuladen. So können wichtige Erkenntnisse weitergegeben oder als Remainder (für sich) gespeichert werden;
+- Schreiben eines Kreiszeigers für die Leaflet-Karte, wobei der Radius vom Benutzer frei gewählt werden kann. So kann der Benutzer einen "Cross-City-Vergleich" sehen.
+- Dem Benutzer die Möglichkeit geben, ausgewählte Restaurants oder Stadtteile als PDF herunterzuladen. So können wichtige Erkenntnisse weitergegeben oder als Remainder gespeichert werden.
 - Weitere Statistiken von Restaurants oder Stadtteilen für Marketingzwecke einführen.
 
 \newpage

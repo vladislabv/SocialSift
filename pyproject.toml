@@ -7,9 +7,9 @@ name = "src"
 version = "0.1.0"
 authors = [
     {name = "Vladislav Stasenko", email = "stasenko.vladislav@fh-swf.de"},
-    {name = "Sinan <>", email = "test@fh-swf.de"},
+    {name = "Sinan Eker", email = "eker.sinan@fh-swf.de"},
 ]
-description = "A project dedicated to analyzing public data from social media and providing basic analysis of niche bloggers' and companies' online presence."
+description = "Web mining project focusing on the analysis of public data of gastronomic companies within Germany."
 readme = "README.rst"
 requires-python = ">=3.9"
 license = {text = "MIT"}
@@ -17,6 +17,10 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
 ]
 dependencies = [
-    "requests",
-    "sqlalchemy"
+    "flask",
+    "scrapy",
+    "pymongo",
+    "python-dotenv",
+    "python-dateutil,
+    "phonenumbers"
 ]

@@ -13,10 +13,10 @@ Gründungsentscheidung faktenbasiert zu treffen. Ob für die Analyse von Markt, 
 
 2.1 Data Collection
 
-Zu Beginn des Projektes werden die Metadaten über deutsche Restaurants (z.B. Website, Adresse und Name) gesammelt. Hierzu wird die Aggregator-Website „htps://www.restaurant.info“ genutzt, auf der Unternehmen ihre Kontaktinformationen bereitstellen. Derzeit existiert eine Liste von mehr als 20 Tsd. Restaurants, die täglich auf den neusten Stand gebracht wird. Für das Ziehen von weiteren nützlichen Informationen, wie Öffnungszeiten oder Speisekarten, wird ein Website-Crawler gebaut, der die Webseiten der zuvor gesammelten Restaurants scannen wird. Dabei wird erwartet, dass mindestens 80 Prozent der Restaurants über eine eigene Webseite
+Zu Beginn des Projektes werden die Metadaten über deutsche Restaurants (z.B. Website, Adresse und Name) gesammelt. Hierzu wird die Aggregator-Website „htps://www.speisekarte.de“ genutzt, auf der Unternehmen ihre Kontaktinformationen bereitstellen. Derzeit existiert eine Liste von mehr als 20 Tsd. Restaurants, die täglich auf den neusten Stand gebracht wird. Für das Ziehen von weiteren nützlichen Informationen, wie Öffnungszeiten oder Speisekarten, wird ein Website-Crawler gebaut, der die Webseiten der zuvor gesammelten Restaurants scannen wird. Dabei wird erwartet, dass mindestens 80 Prozent der Restaurants über eine eigene Webseite
 verfügt.
 
-Neben dem Crawling werden auch diverse Services mit Kundenbewertungen genutzt, deren Daten zur Ermittlung von bestgewerteten Gerichten und Durchschnittsbeträgen verwendet werden. Es wird davon ausgegangen, dass über 60 Prozent der Restaurants auf einer der größten Bewertungsplattformen (TripAdvisor, Yelp, Golocal) zu finden sind.
+Neben dem Crawling werden auch diverse Services mit Kundenbewertungen genutzt, deren Daten zur Ermittlung von bestgewerteten Gerichten und Durchschnittsbeträgen verwendet werden. Es wird davon ausgegangen, dass über 60 Prozent der Restaurants auf einer der größten Bewertungsplattformen (Yelp, Golocal) zu finden sind.
 
 
 2.2 Data preprocessing
@@ -29,8 +29,8 @@ Anschließend werden die bereinigten Daten in eine relationale PostgreSQL-Datenb
 2.3 Data Analysis (Projektziel)
 
 Die Daten sollen den Unternehmer dabei unterstützen, folgende Fragen zu beantworten:
-        - Wie verteilen sich die gegebenen Restaurants in einem bestimmten Bereich nach Preisniveau etc.?
-        - Welche Gerichte sind auf einem bestimmten Standort auf der Karte am beliebtesten?
+    - Wie verteilen sich die gegebenen Restaurants in einem bestimmten Bereich nach Preisniveau etc.?
+    - Welche Gerichte sind auf einem bestimmten Standort auf der Karte am beliebtesten?
 
 Um diese Fragestellungen anzugehen, wird ein Template erstellt, bei dem der dynamische Inhalt von dem ausgewählten Bereich auf der Deutschlandkarte abhängt. Für die ausstehenden Analysen werden verschiedene Python-Funktionen verwendet, um eine effiziente Datenverarbeitung zu ermöglichen. Um die Kommunikation mit den Benutzern zu vereinfachen, wird eine Webanwendung mit Flask entwickelt, die die Analysen mit einer benutzerfreundlichen Visualisierung darstellt.
 
@@ -46,7 +46,6 @@ Project Organization
 ------------
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
@@ -70,23 +69,6 @@ Project Organization
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
     │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
@@ -94,17 +76,3 @@ Project Organization
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
-=======
-
- Expose (bis 12.06.)
- 
- Inhalt (1-2 Seiten):
- 
- 1. Projektname: SocialSift
- 2. Projektziel
- 3. Projektumfang (Eingrenzung/Scope)
- 4. Genutzte Datenquellen
- 5. Projektmeilensteine (Was müssen wir tun, um unser Projektziel zu erreichen)
- 6. Nutzen und Mehrwert des Projektes
- 
- -> Vorgang und Darstellung des Projektes soll klar und deutlich sein.

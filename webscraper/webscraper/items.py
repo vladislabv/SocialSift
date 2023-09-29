@@ -1,64 +1,69 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
+"""
+This module defines the Scrapy items used for web scraping restaurant data.
+
+Define here the models for your scraped items
+See documentation in: https://docs.scrapy.org/en/latest/topics/items.html
+"""
+
 from datetime import datetime as dt
 import scrapy
 
-
 class Resto(scrapy.Item):
-    # meta field
-    collection = 'restos'
-    # define the fields for your item here like:
+    """
+    Represents a restaurant item.
+    """
+    collection = 'restos'  # Meta field
     name = scrapy.Field()
     about = scrapy.Field()
     website = scrapy.Field()
-    kitchen_types = scrapy.Field()  # list of strings
-    
-    social_media = scrapy.Field()  # list of strings
-    # location data fields
-    phone = scrapy.Field()
+    kitchen_types = scrapy.Field()  # List of strings
+    social_media = scrapy.Field()  # List of strings
+    phone = scrapy.Field()  # Location data fields
     location = scrapy.Field()
-    # embedded documents
-    address = scrapy.Field()
-    # list of Menu items
-    menu_positions = scrapy.Field()
-    # list of RestoHours items
-    working_hours = scrapy.Field()
-    # referenced documents
-    # list of Review items
-    reviews = scrapy.Field()
-
+    address = scrapy.Field()  # Embedded documents
+    menu_positions = scrapy.Field()  # List of Menu items
+    working_hours = scrapy.Field()  # List of RestoHours items
+    reviews = scrapy.Field()  # Referenced documents
 
 class RestoAddress(scrapy.Item):
+    """
+    Represents the address of a restaurant.
+    """
     street = scrapy.Field()
     zip = scrapy.Field()
     city = scrapy.Field()
 
 class RestoLocation(scrapy.Item):
+    """
+    Represents the location of a restaurant.
+    """
     type = scrapy.Field()
     coordinates = scrapy.Field()
 
 class RestoHours(scrapy.Item):
-    # define the fields for your item here like:
+    """
+    Represents the opening hours of a restaurant.
+    """
     day = scrapy.Field()
     open_time = scrapy.Field()
     close_time = scrapy.Field()
 
-
 class Menu(scrapy.Item):
-    # define the fields for your item here like:
+    """
+    Represents a menu item.
+    """
+    collection = 'menus'  # Meta field
     name = scrapy.Field()
     price = scrapy.Field()
     currency = scrapy.Field()
     description = scrapy.Field()
     category = scrapy.Field()
 
-
 class Review(scrapy.Item):
-    # meta field
-    collection = 'reviews'
-    """storage type hint for review data"""
+    """
+    Represents a review for a restaurant.
+    """
+    collection = 'reviews'  # Meta field
     date = scrapy.Field()
     rating = scrapy.Field()
     title = scrapy.Field()
@@ -68,19 +73,19 @@ class Review(scrapy.Item):
     platform = scrapy.Field()
     author_name = scrapy.Field()
 
-
 class RestoHistory(scrapy.Item):
-    # meta field
-    collection = 'snapshots'
-    # UNIQUE(url, snapshot_at)
-    # url points to resto item
-    url = scrapy.Field()
+    """
+    Represents a historical snapshot of a restaurant's data.
+    """
+    collection = 'snapshots'  # Meta field
+    url = scrapy.Field()  # UNIQUE(url, snapshot_at)
     title = scrapy.Field()
     text = scrapy.Field()
     snapshot_at = scrapy.Field(default=dt.now())
     fetched_at = scrapy.Field(default=dt.now())
 
-
 class WebFile(scrapy.Item):
-    # ... other item fields ...
+    """
+    Represents a web file item.
+    """
     file_urls = scrapy.Field()

@@ -1,8 +1,7 @@
-import uuid
-from urllib.parse import urlparse
-
+"""
+This module contains a Scrapy Spider for extracting restaurant data from speisekarte.de.
+"""
 import scrapy
-from scrapy.spiders import SitemapSpider
 
 from webscraper.items import (
     Resto,
@@ -23,91 +22,9 @@ from webscraper.itemsloaders import (
 
 from webscraper.utils import gen_weekdays_in_between
 
-TOP_20_CITIES = [
-    "berlin",
-"hamburg",
-"m%c3%bcnchen",
-"k%c3%b6ln",
-"frankfurt-am-main",
-"stuttgart",
-"d%c3%bcsseldorf",
-"leipzig",
-"dortmund",
-"essen",
-"bremen",
-"dresden",
-"hannover",
-"n%c3%bcrnberg",
-"duisburg",
-"bochum",
-"wuppertal",
-"bielefeld",
-"bonn",
-"m%c3%bcnster",
-"mannheim",
-"karlsruhe",
-"augsburgwiesbaden",
-"m%c3%b6nchengladbach",
-"gelsenkirchen",
-"aachen",
-"braunschweig",
-"chemnitz",
-"kiel",
-"halle",
-"magdeburg",
-"freiburg-im-breisgau",
-"krefeld",
-"mainz",
-"l%c3%bcbeck",
-"erfurt",
-"oberhausen",
-"rostock",
-"kassel",
-"hagen",
-"potsdam",
-"saarbr%c3%bccken",
-"hamm",
-"ludgwigshafen-am-rhein",
-"oldenburg",
-"m%c3%bclheim-an-der-ruhr",
-"osnabr%c3%bcck",
-"leverkusen",
-"heidelberg",
-"darmstadt",
-"solingen",
-"regensburg",
-"herne",
-"paderborn",
-"neuss",
-"ingolstadt",
-"offenbach-am-main",
-"f%c3%bcrth",
-"ulm",
-"heilbronn",
-"pforzheim",
-"w%c3%bcrzburg",
-"wolfsburg",
-"g%c3%b6ttingen",
-"bottrop",
-"reutlingen",
-"erlangen",
-"bremer­haven",
-"koblenz",
-"bergisch-gladbach",
-"remscheid",
-"trier",
-"recklinghausen",
-"jena",
-"moers",
-"salzgitter",
-"siegen",
-"g%c3%bctersloh",
-"hildesheim",
-"hanau",
-"kaiserslautern"
-]
 
-class RestosSpider(SitemapSpider):
+
+class RestosSpider(scrapy.spiders.SitemapSpider):
     name = "restos"
     allowed_domains = ["images.speisekarte.de", "speisekarte.de"]
     sitemap_urls  = ["https://images.speisekarte.de/media/docs/sitemaps/staedte1.xml"]
@@ -115,9 +32,6 @@ class RestosSpider(SitemapSpider):
 
     def parse_page(self, response):
         self.logger.info('Hi, this is a resto page! %s', response.url)
-
-        if response.url.split("/")[3] not in TOP_20_CITIES:
-            return
         
         resto_urls = response.css("h2 a[href*='/restaurant/']::attr(href)").getall()
         for url in resto_urls:

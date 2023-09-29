@@ -1,3 +1,7 @@
+"""
+This module contains custom Scrapy ItemLoaders with input and output processors for data processing.
+"""
+
 import w3lib.html as w3h
 from scrapy.loader import ItemLoader
 from itemloaders.processors import (
@@ -17,6 +21,9 @@ from webscraper.utils import (
 
 
 class RestoLoader(ItemLoader):
+    """
+    ItemLoader for restaurant data.
+    """
     default_output_processor = TakeFirst()
 
     name_in = MapCompose(w3h.remove_tags, str.strip, fix_whitespaces, normalize_str)
@@ -41,6 +48,9 @@ class RestoLoader(ItemLoader):
 
 
 class LocationLoader(ItemLoader):
+    """
+    ItemLoader for location data.
+    """
     default_output_processor = TakeFirst()
 
     coordinates_in = MapCompose(str.strip, float)
@@ -48,6 +58,9 @@ class LocationLoader(ItemLoader):
 
 
 class AddressLoader(ItemLoader):
+    """
+    ItemLoader for address data.
+    """
     default_output_processor = TakeFirst()
 
     street_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
@@ -56,6 +69,9 @@ class AddressLoader(ItemLoader):
 
 
 class WorkingHoursLoader(ItemLoader):
+    """
+    ItemLoader for working hours data.
+    """
     default_output_processor = TakeFirst()
 
     open_time_in = MapCompose(str.strip)
@@ -64,6 +80,9 @@ class WorkingHoursLoader(ItemLoader):
 
 
 class MenuLoader(ItemLoader):
+    """
+    ItemLoader for menu data.
+    """
     default_output_processor = TakeFirst()
 
     name_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
@@ -81,6 +100,9 @@ class MenuLoader(ItemLoader):
 
 
 class ReviewLoader(ItemLoader):
+    """
+    ItemLoader for review data.
+    """
     default_output_processor = TakeFirst()
 
     date_in = MapCompose(str.strip, to_datetime)
@@ -103,6 +125,9 @@ class ReviewLoader(ItemLoader):
 
 
 class WebsiteLoader(ItemLoader):
+    """
+    ItemLoader for website data.
+    """
     default_output_processor = TakeFirst()
 
     url_in = MapCompose(str.strip, fix_whitespaces, normalize_str)
@@ -116,4 +141,7 @@ class WebsiteLoader(ItemLoader):
 
 
 class WebFileLoader(ItemLoader):
+    """
+    ItemLoader for web file data.
+    """
     default_output_processor = Identity()

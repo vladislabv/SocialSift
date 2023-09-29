@@ -1,3 +1,73 @@
+GET_RESTAURANTS = [
+    {
+        '$unwind': {
+            'path': '$menu_positions', 
+            'preserveNullAndEmptyArrays': False
+        }
+    }, {
+        '$unwind': {
+            'path': '$reviews', 
+            'preserveNullAndEmptyArrays': False
+        }
+    }, {
+        '$group': {
+            '_id': '$_id', 
+            'name': {
+                '$first': '$name'
+            }, 
+            'website': {
+                '$first': '$website'
+            }, 
+            'kitchen_types': {
+                '$first': '$kitchen_types'
+            }, 
+            'phone': {
+                '$first': '$phone'
+            }, 
+            'address': {
+                '$first': '$address'
+            }, 
+            'location': {
+                '$first': '$location'
+            }, 
+            'neighbourhood_id': {
+                '$first': '$neighbourhood_id'
+            }, 
+            'average_price': {
+                '$avg': '$menu_positions.price'
+            }, 
+            'average_rating': {
+                '$avg': '$reviews.rating'
+            }
+        }
+    }, {
+        '$project': {
+            '_id': 0, 
+            'name': {
+                '$trim': {
+                    'input': '$name'
+                }
+            }, 
+            'website': 1, 
+            'kitchen_types': 1, 
+            'phone': 1, 
+            'address': 1, 
+            'location': 1, 
+            'neighbourhood_id': 1, 
+            'average_price': {
+                '$ifNull': [
+                    '$average_price', 'Unspecified'
+                ]
+            }, 
+            'average_rating': {
+                '$ifNull': [
+                    '$average_rating', 'Unspecified'
+                ]
+            }
+        }
+    }
+]
+
 GET_NEIGHBOURHOODS = [
     {
         '$lookup': {

@@ -1,0 +1,88 @@
+Project Webscraper {
+  database_type: 'MongoDB'
+  Note: '''
+    # Webscraper for the WebMining Project "Gastronomic Intelligence Hub"
+    
+    It looks like a snowflake schema, which makes it easy to access all informations you need
+    only by accessing the main "restos" collection.
+
+    ## Benefits
+    
+    * Simplicity, flexibility and human-readability achieved by embedding and referencing techniques
+    * Thru referencing on fields "menu_position_ids" and "review_ids" we prevent the documents in "restos" collection being unbounded
+  '''
+}
+
+
+Table restos {
+  _id object [pk, note: 'ObjectId']
+  name string [note: 'Name of restaurant']
+  website string [note: 'Main website of a restaurant. Can be http as well as https']
+  about string [note: 'A short restaurant description, provided by its founder(s)']
+  address object [note: '''
+    Address object with structure:
+    street text [note: 'Street name with buildings number']
+    zip text [note: 'Postal code of the address']
+    city text [note: 'City where a restaurant is located']
+  ''']
+  location geojson [note: '''
+    Structure of the location object:
+      type string [note: '==Point']
+      coordinates array [note: '0 - Latitude, 1 - Longitude']
+  ''']
+  menu_position_ids array [note: 'An array of ObjectIds pointing to the "menus" table']
+  review_ids array [note: 'An array of ObjectIds pointing to the "reviews" table']
+  neighbourhood_id object [note: 'ObjectId pointing to the "neighbourhoods" table, simply say which polygon a resto belongs to']
+  Indexes {
+    (name, address) [unique]
+    location [name: '2dsphere']
+  }
+  note: 'Collection listing all collected restaurants from webstite speisekarte.de'
+}
+
+Table reviews {
+  _id object [pk, note: 'ObjectId']
+  text string [note: 'Review text']
+  author_name string [note: 'Public visible author name']
+  date date [note: 'Datetime when a review was published']
+  platform string [note: 'On which platform a review was published (website)']
+  rating decimal128 [note: 'Rating of the review from scale 1(worst) to 5(best)']
+
+  Indexes {
+    text [unique]
+  }
+  note: 'Collection listing all reviews collected for restaurants'
+}
+
+
+Table menus {
+  _id object [pk, note: 'ObjectId']
+  name string [note: 'Name of a menu position as stated on the speisekarte.de']
+  price decimal128 [note: 'Price of a menu position, with cents if applicapable']
+  currency string(3) [note: 'Currency used for the price']
+
+  Indexes {
+    (name, price) [unique]
+  }
+  note: 'Collection defining menu positions for restaurants that webscraper fetched'
+}
+
+
+Table neighbourhoods {
+  _id object [pk, note: 'ObjectId']
+  location geojson [note: '''
+    Structure of the location object:
+      type string [note: 'Whether Polygon or Multipolygon']
+      coordinates array [note: '0 - Latitude, 1 - Longitude']
+  ''']
+
+  Indexes {
+    location [name: '2dsphere']
+  }
+  note: 'Collection serving as a holder for all found geojson objects to german cities and/or districts'
+}
+
+
+Ref: neighbourhoods._id < restos.neighbourhood_id
+Ref: reviews._id < restos.review_ids
+Ref: menus._id < restos.menu_position_ids
